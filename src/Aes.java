@@ -78,10 +78,8 @@ public class Aes {
     static byte[][] genkey;
     public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
 
-        // Open the file that is the first
-        // command line parameter
+
         FileInputStream fstream = new FileInputStream("res/textfile.txt");
-        // Get the object of DataInputStream
         DataInputStream in = new DataInputStream(fstream);
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         fstream=new FileInputStream("res/key.txt");
@@ -102,25 +100,7 @@ public class Aes {
                     + Character.digit(strLine.charAt(i+1), 16));
         }
         for(i=0;i<32;i++)
-            key [i%4][i/4]=inp[i];
-  /* for(i=0;i<4;i++)
-      {
-          for(j=0;j<8;j++)
-          {
-
-              System.out.printf("%02X ", key[i][j]);
-          }
-          System.out.println();
-      } */
         genkey=generateSubkeys(inp);
-        // System.out.println(genkey.length);
-  /*    for(i=0;i<genkey.length;i++)
-      {
-          for(j=0;j<4;j++)
-          {
-              System.out.printf("%02X ", genkey[i][j]);
-          }
-      } */
         File enc = new File("encryption.txt");
         File dec = new File("decryption.txt");
         FileWriter writer = new FileWriter(enc);
@@ -149,15 +129,6 @@ public class Aes {
 
             }
 
-   /*for(i=0;i<4;i++)
-      {
-          for(j=0;j<4;j++)
-          {
-
-              System.out.printf("%02X ", state[i][j]);
-          }
-          System.out.println();
-      } */
             inter=AddRoundKey(input,0);
             System.out.println("Encryption Round 0");
             Display(inter);
@@ -186,7 +157,7 @@ public class Aes {
             for (byte b : inter) {
                 sb.append(String.format("%02X", b));
             }
-            // System.out.println(sb.toString());
+
             writer.append(sb.toString());
             writer.append("\r\n");
 
@@ -273,7 +244,7 @@ public class Aes {
     private static byte[] SubByte(byte[] temp) {
         for(int i=0;i<temp.length;i++)
         {
-            //System.out.printf("%02X ",temp[i]);
+
             temp[i] = (byte) (sbox[temp[i] & 0x000000ff]);
 
 
@@ -287,7 +258,7 @@ public class Aes {
         rot[1]=temp[2];
         rot[2]=temp[3];
         rot[3]=temp[0];
-        //  System.out.printf("%02X ", rot[0]);
+
         return rot;
 
     }
@@ -295,7 +266,7 @@ public class Aes {
     private static byte[] AddRoundKey(byte[] input,int round) {
         int i,j,c=0;
         j=0;
-        // System.out.println("Round "+round);
+
 
         for(i=4*round;i<4*round+4;i++)
         {
@@ -361,11 +332,11 @@ public class Aes {
         {
             for(j=0;j<4;j++)
             {
-                // System.out.printf("%02X ", tempstate[i][j]);
+
                 inter[c++]=tempstate[j][i];
 
             }
-            //System.out.println();
+
         }
         return inter;
     }
@@ -448,11 +419,7 @@ public class Aes {
             {
                 a=(byte)(a^(byte)0x1b);
             }
-  /* System.out.printf("%02X ",carry);
- System.out.printf("%02X ",p);
-  System.out.printf("%02X ",a);
-   System.out.printf("%02X ",b);
-   System.out.println(); */
+
         }
         return p;
     }
@@ -518,11 +485,11 @@ public class Aes {
         {
             for(j=0;j<4;j++)
             {
-                // System.out.printf("%02X ", tempstate[i][j]);
+
                 inter[c++]=tempstate[j][i];
 
             }
-            //System.out.println();
+
         }
         return inter;
     }
@@ -581,10 +548,10 @@ public class Aes {
         {
             for(j=0;j<4;j++)
             {
-                // System.out.printf("%02X ", tempstate[i][j]);
+
                 inter[c++]=tempstate[i][j];
             }
-            // System.out.println();
+
         }
 
         return inter;
