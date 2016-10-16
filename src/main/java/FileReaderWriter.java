@@ -13,35 +13,35 @@ public class FileReaderWriter {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         fstream = new FileInputStream("res/key.txt");
         in = new DataInputStream(fstream);
-        BufferedReader keybr = new BufferedReader(new InputStreamReader(in));
+        BufferedReader keyBufferedReader = new BufferedReader(new InputStreamReader(in));
         String strLine;
 
-        strLine = keybr.readLine();
+        strLine = keyBufferedReader.readLine();
         byte[] key=Util.stringToByteArray(strLine,32);
         Aes aes=new Aes();
 
-        File enc = new File("encryption.txt");
-        File dec = new File("decryption.txt");
-        FileWriter writer = new FileWriter(enc);
-        FileWriter writer1 = new FileWriter(dec);
+        File encryptionFile = new File("encryption.txt");
+        File decryptionFile = new File("decryption.txt");
+        FileWriter encryptionWriter = new FileWriter(encryptionFile);
+        FileWriter decryptionWriter = new FileWriter(decryptionFile);
 
         while ((strLine = br.readLine()) != null) {
             byte[] input=Util.stringToByteArray(strLine,16);
             byte[] encryptedMessage=aes.encrypt(key,input);
-            writer.append(Util.byteArrayToString(encryptedMessage));
-            writer.append("\r\n");
+            encryptionWriter.append(Util.byteArrayToString(encryptedMessage));
+            encryptionWriter.append("\r\n");
 
             byte[] decryptedMessage=aes.decrypt(key,encryptedMessage);
-            writer1.append(Util.byteArrayToString(decryptedMessage));
-            writer1.append("\r\n");
+            decryptionWriter.append(Util.byteArrayToString(decryptedMessage));
+            decryptionWriter.append("\r\n");
         }
 
         in.close();
 
-        writer.flush();
-        writer.close();
-        writer1.flush();
-        writer1.close();
+        encryptionWriter.flush();
+        encryptionWriter.close();
+        decryptionWriter.flush();
+        decryptionWriter.close();
 
     }
 

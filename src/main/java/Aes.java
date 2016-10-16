@@ -6,6 +6,8 @@ public class Aes {
     final static int nb = 4;
     final static int nk = 8;
     final static int nr = 14;
+    private final static byte two = (byte) 0x02;
+    private final static byte three = (byte) 0x03;
     static byte[][] genkey;
 
     private static byte[][] generateSubkeys(byte[] key) {
@@ -118,7 +120,7 @@ public class Aes {
         return inter;
     }
 
-    private static byte[] MixColumn(byte[] inter) {
+/*    private static byte[] MixColumn(byte[] inter) {
         byte a, b, c, d, e;
         int i, j;
         byte[] temp = new byte[4];
@@ -163,6 +165,33 @@ public class Aes {
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
                 inter[c++] = tempstate[i][j];
+            }
+        }
+
+        return inter;
+    }*/
+
+        private static byte[] MixColumn(byte[] inter) {
+        int i, j;
+        byte[] temp = new byte[4];
+        byte[][] state = new byte[4][4];
+        byte[][] tempstate = new byte[4][4];
+        for (i = 0; i < 16; i++) {
+            state[i % 4][i / 4] = inter[i];
+
+        }
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 4; j++) {
+                temp[j] = state[j][i];
+            }
+            tempstate[i][0] = (byte)(mul(temp[0],two)^mul(temp[1],three)^temp[2]^temp[3]);
+            tempstate[i][1] = (byte)(temp[0]^mul(temp[1],two)^mul(temp[2],three)^temp[3]);
+            tempstate[i][2] = (byte)(temp[0]^temp[1]^mul(temp[2],two)^mul(temp[3],three));
+            tempstate[i][3] = (byte)(mul(temp[0],three)^temp[1]^temp[2]^mul(temp[3],two));
+        }
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 4; j++) {
+                inter[4*i+j] = tempstate[i][j];
             }
         }
 
