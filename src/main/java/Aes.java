@@ -2,10 +2,12 @@
  * Created by k22jain on 15/10/16.
  */
 public class Aes {
+
     final static int nb = 4;
     final static int nk = 8;
     final static int nr = 14;
     static byte[][] genkey;
+
     private static byte[][] generateSubkeys(byte[] key) {
         byte[][] expkey = new byte[nb * (nr + 1)][4];
         int i;

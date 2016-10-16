@@ -20,67 +20,33 @@ public class FileReaderWriter {
         byte[] inp = new byte[32];
         byte[] inter;
         strLine = keybr.readLine();
-
-        for (int i = 0; i < 64; i += 2) {
-            inp[i / 2] = (byte) ((Character.digit(strLine.charAt(i), 16) << 4)
-                    + Character.digit(strLine.charAt(i + 1), 16));
-        }
+        inp=Util.stringToByteArray(strLine,32);
         Aes aes=new Aes();
         File enc = new File("encryption.txt");
         File dec = new File("decryption.txt");
         FileWriter writer = new FileWriter(enc);
         FileWriter writer1 = new FileWriter(dec);
-        FileOutputStream stream = new FileOutputStream("encryption.txt");
 
         while ((strLine = br.readLine()) != null) {
-
-            if (strLine.length() < 32) {
-                int no_of_zeroes = 32 - strLine.length();
-                String zeroes = "";
-                for (int iter = 1; iter <= no_of_zeroes; iter++) {
-                    zeroes = zeroes + "0";
-                }
-                strLine = strLine + zeroes;
-                System.out.println("zeroes padded for the following line:" + zeroes.length());
-                System.out.printf("\n\n\n");
-            }
-
-
-            for (int i = 0; i < 32; i += 2) {
-                input[i / 2] = (byte) ((Character.digit(strLine.charAt(i), 16) << 4)
-                        + Character.digit(strLine.charAt(i + 1), 16));
-            }
-            for (int i = 0; i < 16; i++) {
-                state[i % 4][i / 4] = input[i];
-
-            }
-
+            input=Util.stringToByteArray(strLine,16);
             inter=aes.encrypt(inp,input);
-            stream.write(inter);
-            StringBuilder sb = new StringBuilder();
-            for (byte b : inter) {
-                sb.append(String.format("%02X", b));
-            }
-
-            writer.append(sb.toString());
+            writer.append(Util.byteArrayToString(inter));
             writer.append("\r\n");
 
             inter=aes.decrypt(inp,inter);
-            sb = new StringBuilder();
-            for (byte b : inter) {
-                sb.append(String.format("%02X", b));
-            }
-            writer1.append(sb.toString());
+            writer1.append(Util.byteArrayToString(inter));
             writer1.append("\r\n");
         }
 
         in.close();
 
-        stream.close();
         writer.flush();
         writer.close();
         writer1.flush();
         writer1.close();
+
+        //String encryptedString=Util.byteArrayToString(aes.encrypt(inp,Util.stringToByteArray("6bc1bee22e409f96e93d7e117393172a",16)));
+        //System.out.println(encryptedString);
 
     }
 
