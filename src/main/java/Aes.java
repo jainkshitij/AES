@@ -1,129 +1,11 @@
-import java.io.*;
-
-
+/**
+ * Created by k22jain on 15/10/16.
+ */
 public class Aes {
-
     final static int nb = 4;
     final static int nk = 8;
     final static int nr = 14;
     static byte[][] genkey;
-
-    public static void main(String[] args) throws IOException {
-
-
-        FileInputStream fstream = new FileInputStream("res/textfile.txt");
-        DataInputStream in = new DataInputStream(fstream);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        fstream = new FileInputStream("res/key.txt");
-        in = new DataInputStream(fstream);
-        BufferedReader keybr = new BufferedReader(new InputStreamReader(in));
-        String strLine;
-        byte[][] state = new byte[4][4];
-        byte[] input = new byte[16];
-        byte[] inp = new byte[32];
-        byte[] inter;
-        strLine = keybr.readLine();
-
-        for (int i = 0; i < 64; i += 2) {
-            inp[i / 2] = (byte) ((Character.digit(strLine.charAt(i), 16) << 4)
-                    + Character.digit(strLine.charAt(i + 1), 16));
-        }
-        for (int i = 0; i < 32; i++)
-            genkey = generateSubkeys(inp);
-        File enc = new File("encryption.txt");
-        File dec = new File("decryption.txt");
-        FileWriter writer = new FileWriter(enc);
-        FileWriter writer1 = new FileWriter(dec);
-        FileOutputStream stream = new FileOutputStream("encryption.txt");
-
-        while ((strLine = br.readLine()) != null) {
-
-            if (strLine.length() < 32) {
-                int no_of_zeroes = 32 - strLine.length();
-                String zeroes = "";
-                for (int iter = 1; iter <= no_of_zeroes; iter++) {
-                    zeroes = zeroes + "0";
-                }
-                strLine = strLine + zeroes;
-                System.out.println("zeroes padded for the following line:" + zeroes.length());
-                System.out.printf("\n\n\n");
-            }
-
-
-            for (int i = 0; i < 32; i += 2) {
-                input[i / 2] = (byte) ((Character.digit(strLine.charAt(i), 16) << 4)
-                        + Character.digit(strLine.charAt(i + 1), 16));
-            }
-            for (int i = 0; i < 16; i++) {
-                state[i % 4][i / 4] = input[i];
-
-            }
-
-            inter = AddRoundKey(input, 0);
-            System.out.println("Encryption Round 0");
-            Display(inter);
-            for (int i = 1; i <= 13; i++) {
-                inter = ByteSub(inter);
-                inter = ShiftRow(inter);
-                inter = MixColumn(inter);
-                inter = AddRoundKey(inter, i);
-                System.out.println("Encryption Round 14" + i);
-                Display(inter);
-
-            }
-
-            inter = ByteSub(inter);
-            inter = ShiftRow(inter);
-            inter = AddRoundKey(inter, 14);
-            System.out.println("Encryption Round ");
-            Display(inter);
-
-            stream.write(inter);
-            StringBuilder sb = new StringBuilder();
-            for (byte b : inter) {
-                sb.append(String.format("%02X", b));
-            }
-
-            writer.append(sb.toString());
-            writer.append("\r\n");
-
-            System.out.println("Decryption");
-            inter = AddRoundKey(inter, 14);
-
-            inter = InverseByteSub(inter);
-            inter = InverseShiftRow(inter);
-            System.out.println("Decryption Round " + 0);
-            Display(inter);
-
-            for (int i = 13; i > 0; i--) {
-                inter = AddRoundKey(inter, i);
-                inter = InverseMixColumn(inter);
-                inter = InverseByteSub(inter);
-                inter = InverseShiftRow(inter);
-                System.out.println("Decryption Round " + (14 - i));
-                Display(inter);
-            }
-            inter = AddRoundKey(inter, 0);
-            System.out.println("Decryption Round " + (14));
-            Display(inter);
-            sb = new StringBuilder();
-            for (byte b : inter) {
-                sb.append(String.format("%02X", b));
-            }
-            writer1.append(sb.toString());
-            writer1.append("\r\n");
-        }
-
-        in.close();
-
-        stream.close();
-        writer.flush();
-        writer.close();
-        writer1.flush();
-        writer1.close();
-
-    }
-
     private static byte[][] generateSubkeys(byte[] key) {
         byte[][] expkey = new byte[nb * (nr + 1)][4];
         int i;
@@ -310,11 +192,6 @@ public class Aes {
         return inter;
     }
 
-    private static void Display(byte[] inter) {
-        for (byte anInter : inter) System.out.printf("%02X", anInter);
-        System.out.println();
-    }
-
     private static byte[] InverseShiftRow(byte[] inter) {
         int i, j, c = 0;
         byte[][] state = new byte[4][4];
@@ -410,4 +287,40 @@ public class Aes {
         }
         return inter;
     }
+
+    public byte[] encrypt (byte[] key, byte[] input)
+    {
+        for (int i = 0; i < 32; i++) {
+            genkey = generateSubkeys(key);
+        }
+        byte[] inter= AddRoundKey(input, 0);
+        for (int i = 1; i <= 13; i++) {
+            inter = ByteSub(inter);
+            inter = ShiftRow(inter);
+            inter = MixColumn(inter);
+            inter = AddRoundKey(inter, i);
+        }
+        inter = ByteSub(inter);
+        inter = ShiftRow(inter);
+        inter = AddRoundKey(inter, 14);
+        return inter;
+    }
+
+    public byte[] decrypt (byte[] key, byte[] input) {
+        for (int i = 0; i < 32; i++) {
+            genkey = generateSubkeys(key);
+        }
+        byte[] inter= AddRoundKey(input, 14);
+        inter = InverseByteSub(inter);
+        inter = InverseShiftRow(inter);
+        for (int i = 13; i > 0; i--) {
+            inter = AddRoundKey(inter, i);
+            inter = InverseMixColumn(inter);
+            inter = InverseByteSub(inter);
+            inter = InverseShiftRow(inter);
+        }
+        inter = AddRoundKey(inter, 0);
+        return inter;
+    }
+
 }
