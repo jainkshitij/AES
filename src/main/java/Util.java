@@ -29,4 +29,48 @@ public class Util {
         }
         return input;
     }
+
+    public static byte[] arrayConvertor (byte[][] twoDimensionArray)
+    {
+
+        byte[] oneDimesionArray =new byte[twoDimensionArray.length*twoDimensionArray[0].length];
+        for(int i=0;i<twoDimensionArray.length;i++)
+        {
+            for(int j=0;j<twoDimensionArray[i].length;j++)
+            {
+                oneDimesionArray[i*twoDimensionArray.length+j]=twoDimensionArray[i][j];
+            }
+        }
+        return oneDimesionArray;
+    }
+
+    public static byte[] columnMajorArrayConvertor (byte[][] twoDimensionArray)
+    {
+
+        byte[] oneDimesionArray =new byte[twoDimensionArray.length*twoDimensionArray[0].length];
+        for(int i=0;i<twoDimensionArray.length;i++)
+        {
+            for(int j=0;j<twoDimensionArray[i].length;j++)
+            {
+                oneDimesionArray[i*twoDimensionArray.length+j]=twoDimensionArray[j][i];
+            }
+        }
+        return oneDimesionArray;
+    }
+
+    public static byte byteMultiply(byte a, byte b) {
+        byte p = 0;
+        for (int i = 0; i < 8; i++) {
+            if ((b & 1) != 0) {
+                p = (byte) (p ^ a);
+            }
+            b = (byte) (b >> 1);
+            byte carry = (byte) (a & 0x80);
+            a = (byte) (a << 1);
+            if (carry == (byte) (0x80)) {
+                a = (byte) (a ^ (byte) 0x1b);
+            }
+        }
+        return p;
+    }
 }

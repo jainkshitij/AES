@@ -15,6 +15,9 @@ public class AesTest {
 
     @org.junit.Test
     public void decrypt() throws Exception {
+        Aes aes=new Aes();
+        String decryptedString=Util.byteArrayToString(aes.decrypt(Util.stringToByteArray(key,32),Util.stringToByteArray("23304B7A39F9F3FF067D8D8F9E24ECC7",16)));
+        assertEquals("String doesn't match","F69F2445DF4F9B17AD2B417BE66C3710",decryptedString);
 
     }
 
