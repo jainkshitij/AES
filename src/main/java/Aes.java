@@ -156,38 +156,33 @@ public class Aes {
         return Util.arrayConvertor(tempstate);
     }
 
-    public byte[] encrypt(byte[] key, byte[] input) {
-        for (int i = 0; i < 32; i++) {
-            genkey = generateSubkeys(key);
+    public byte[] encrypt(byte[] key, byte[] message) {
+        genkey=generateSubkeys(key);
+        message = AddRoundKey(message, 0);
+        for (int i = 1; i <= nr; i++) {
+            message = ByteSub(message);
+            message = ShiftRow(message);
+            if(i!=nr) {
+                message = MixColumn(message);
+            }
+            message = AddRoundKey(message, i);
         }
-        byte[] inter = AddRoundKey(input, 0);
-        for (int i = 1; i <= 13; i++) {
-            inter = ByteSub(inter);
-            inter = ShiftRow(inter);
-            inter = MixColumn(inter);
-            inter = AddRoundKey(inter, i);
-        }
-        inter = ByteSub(inter);
-        inter = ShiftRow(inter);
-        inter = AddRoundKey(inter, 14);
-        return inter;
+        return message;
     }
 
-    public byte[] decrypt(byte[] key, byte[] input) {
-        for (int i = 0; i < 32; i++) {
-            genkey = generateSubkeys(key);
+    public byte[] decrypt(byte[] key, byte[] message) {
+
+        genkey = generateSubkeys(key);
+        for (int i = nr; i > 0; i--) {
+            message = AddRoundKey(message, i);
+            if(i!=nr) {
+                message = InverseMixColumn(message);
+            }
+            message = InverseByteSub(message);
+            message = InverseShiftRow(message);
         }
-        byte[] inter = AddRoundKey(input, 14);
-        inter = InverseByteSub(inter);
-        inter = InverseShiftRow(inter);
-        for (int i = 13; i > 0; i--) {
-            inter = AddRoundKey(inter, i);
-            inter = InverseMixColumn(inter);
-            inter = InverseByteSub(inter);
-            inter = InverseShiftRow(inter);
-        }
-        inter = AddRoundKey(inter, 0);
-        return inter;
+        message = AddRoundKey(message, 0);
+        return message;
     }
 
 }
